@@ -1,0 +1,5 @@
+# This is a pre-commit hook script that checks for unstaged and staged changes
+if ! git diff --exit-code --quiet; then
+    echo "There are unstaged changes. Please stage them before committing."
+    exit 1
+fi

@@ -1,0 +1,32 @@
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Disallow commit messages that contain the word "WIP"
+if echo "$commit_msg" | grep -q '\bWIP\b'; then
+    echo "Error: Commit messages cannot contain the word 'WIP'."
+    exit 1
+fi
+
+# Format commit message to ensure it is clean and consistent
+formatted_msg=$(echo "$commit_msg" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//;s/[[:space:]]\+/ /g')
+echo "$formatted_msg" > "$commit_msg_file"
+
+# Check if the commit message is empty
+if [ -z "$formatted_msg" ]; then
+    echo "Error: Commit message cannot be empty."
+    exit 1
+fi
+
+# Verify that the commit message is not too long
+max_length=72
+if [ "${#formatted_msg}" -gt "$max_length" ]; then
+    echo "Error: Commit message exceeds maximum length of $max_length characters."
+    exit 1
+fi
+
+# Check valid commit message format like "feat: add new feature" or "feat(scope): add new feature"
+if ! echo "$formatted_msg" | grep -Eq '^(feat|fix|docs|style|refactor|test|chore|perf|build|ci|revert|release)(\([a-zA-Z0-9 _-]+\))?: .+'; then
+    echo "Error: Commit message must follow the format 'type(scope): description' or 'type: description'."
+    echo "Valid types: feat, fix, docs, style, refactor, test, chore, perf, build, ci, revert, release."
+    exit 1
+fi
