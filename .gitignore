@@ -20,6 +20,9 @@
 # production
 /build
 
+# postgres
+/.data/postgres/
+
 # misc
 .DS_Store
 *.pem
